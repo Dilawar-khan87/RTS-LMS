@@ -4,6 +4,7 @@ import { useState } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState("");
@@ -52,7 +53,7 @@ export default function ResetPasswordPage() {
 
         <div className="mt-6 text-center text-sm text-gray-600">
           Back to{" "}
-          <Link href="/login" className="text-blue-500 hover:underline font-semibold">
+          <Link href="/LogIn" className="text-blue-500 hover:underline font-semibold">
             Login
           </Link>
         </div>

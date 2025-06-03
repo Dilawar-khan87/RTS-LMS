@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# firebase config
+/src/lib/firebase.js
+/src/lib/firestore.js
