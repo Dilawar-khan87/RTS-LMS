@@ -76,12 +76,24 @@
 // -------------------------------
 "use client";
 
+import { useAuth } from "@/context/authContext";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaBars, FaTimes } from "react-icons/fa";
 
 export default function Navbar() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/");
+  };
+
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -100,41 +112,67 @@ export default function Navbar() {
   return (
     <nav className="bg-sky-100 shadow-md fixed w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold text-blue-600">
-          Roshan Tara School
-        </Link>
+        {/* Logo or Username */}
+        {user ? (
+          <span className="text-2xl font-bold text-blue-600">
+            {user.displayName || user.email || "User"}
+          </span>
+        ) : (
+          <Link href="/" className="text-2xl font-bold text-blue-600">
+            Roshan Tara School
+          </Link>
+        )}
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex space-x-10 text-blue-700 font-semibold">
-          {navItems.map(({ label, path }) => (
-            <li key={label}>
+        {user ? (
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+          >
+            Logout
+          </button>
+        ) : (
+          <ul className="hidden md:flex space-x-10 text-blue-700 font-semibold">
+            {navItems.map(({ label, path }) => (
+              <li key={label}>
+                <Link
+                  href={path}
+                  className={`relative px-2 py-1 transition-colors duration-300
+                    ${
+                      pathname === path
+                        ? "text-blue-900 after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 after:rounded"
+                        : "hover:text-blue-900"
+                    }`}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+            <li>
               <Link
-                href={path}
-                className={`relative px-2 py-1 transition-colors duration-300
-                  ${
-                    pathname === path
-                      ? "text-blue-900 after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 after:rounded"
-                      : "hover:text-blue-900"
-                  }`}
+                href="/LogIn"
+                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
               >
-                {label}
+                Login
               </Link>
             </li>
-          ))}
-        </ul>
+          </ul>
+        )}
 
         {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-blue-700 hover:text-blue-900 focus:outline-none"
-          aria-label="Toggle Menu"
-        >
-          {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-        </button>
+        {!user && (
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden text-blue-700 hover:text-blue-900 focus:outline-none"
+            aria-label="Toggle Menu"
+          >
+            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
+        )}
       </div>
 
       {/* Mobile Menu */}
-      {menuOpen && (
+      {!user && menuOpen && (
         <ul className="md:hidden bg-sky-50 text-blue-700 font-semibold space-y-4 px-6 pb-6 shadow-md">
           {navItems.map(({ label, path }) => (
             <li key={label}>
@@ -151,8 +189,17 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
+          <li>
+            <Link
+              href="/LogIn"
+              className="block py-2 border-b border-sky-200 hover:text-blue-900"
+            >
+              Login
+            </Link>
+          </li>
         </ul>
       )}
     </nav>
   );
 }
+// This code defines a responsive navigation bar for a school website using React and Next.js.

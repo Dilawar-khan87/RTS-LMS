@@ -1,6 +1,7 @@
 import React from "react";
 import "./globals.css";
 import Navbar from "../components/NavBar";
+import { AuthProvider } from "../context/authContext";
 
 export const metadata = {
   title: "MyApp",
@@ -19,9 +20,12 @@ export default function RootLayout({ children }) {
           referrerPolicy="no-referrer"
         />
       </head>
-      <body>
-        <Navbar />
-        <main className="p-4">{children}</main>
+       <body>
+        <AuthProvider>   
+          {/* AuthProvider sabko wrap kar raha hai */}
+          <Navbar />
+          <main className="p-4">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );

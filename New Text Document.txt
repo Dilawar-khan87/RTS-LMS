@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // users collection: users apna khud ka data read aur write kar sakte hain
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+
+    // principal ya admin ko poora users collection dekhna ho to ye allow karna hoga
+    // Agar principal role check karna ho to Firestore rules me role verify karne ka thoda complex tariqa lagega
+    // Basic example:
+    // match /users/{userId} {
+    //   allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'principal';
+    //   allow write: if false;  // only allow writes to self
+    // }
+    // Allow principal role to read and write staff data in 'users' collection
+    match /users/{userId} {
+      allow read, write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'principal';
+    }
+//for events
+    match /events/{eventId} {
+      allow read, write: if request.auth != null;
+    }
+    //contact-requests
+    match /contactRequests/{docId} {
+  allow read, update: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "principal";
+}
+
+    
+    // for gallery images
+// Allow gallery collection read/write
+    match /gallery/{document=**} {
+      allow read, write: if true; // ✅ TEMP: allow all
+    }
+
+    // (Optional) Add for other collections if needed
+    // match /users/{userId} {
+    //   allow read, write: if request.auth != null;
+    // }
+
+		    // Allow only logged-in users to read/write students (adjust as needed)
+    match /students/{studentId} {
+      allow read, write: if request.auth != null;
+    }
+    //for announcements
+    match /announcements/{docId} {
+  allow read, write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "principal";
+}
+
+    // agar staff list ko principal hi dekh sakta hai to
+    match /users/{userId} {
+      allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'principal';
+      allow write: if request.auth != null && request.auth.uid == userId; // user can edit their own record
+    }
+    
+    //contact-us-form
+		match /contactRequests/{docId} {
+      allow create: if true; // anyone can submit
+      allow read, update,delete: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "principal";
+    }
+    
+  }
+}

@@ -17,10 +17,12 @@ import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
+import SignUpTest from "./SignUp/page";
 
 export default function HomePage() {
   return (
     <>
+      {/* <SignUpTest /> */}
       <StatsAdmission />
       <VideoTour />
       <Testimonials />
