@@ -22,7 +22,7 @@ export default function SignupPage() {
       });
 
       alert("Signup successful! Redirecting to login...");
-      router.push("/login");
+      router.push("/LogIn");
     } catch (err) {
       console.error("Signup error:", err.message);
     }
